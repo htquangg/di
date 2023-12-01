@@ -1,5 +1,7 @@
 package di
 
+import "context"
+
 // Container represents a dependency injection container.
 // To create a Container, you should use a Builder or another Container.
 //
@@ -16,6 +18,9 @@ type Container interface {
 
 	// Scope returns the Container scope.
 	Scope() string
+
+	// Scoped returns the context Container scope.
+	Scoped(ctx context.Context) context.Context
 
 	// Scopes returns the list of available scopes.
 	Scopes() []string

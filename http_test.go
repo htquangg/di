@@ -156,7 +156,7 @@ func TestC(t *testing.T) {
 	// real http.Request with a container
 	req, _ := http.NewRequest("", "", nil)
 	req = req.WithContext(
-		context.WithValue(req.Context(), ContainerKey("di"), app),
+		context.WithValue(req.Context(), containerKey, app),
 	)
 
 	ctn = C(req)

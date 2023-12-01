@@ -36,7 +36,7 @@ func HTTPMiddleware(h http.HandlerFunc, app Container, logFunc func(msg string))
 		// call the handler with a new request
 		// containing the container in its context
 		h(w, r.WithContext(
-			context.WithValue(r.Context(), ContainerKey("di"), ctn),
+			context.WithValue(r.Context(), containerKey, ctn),
 		))
 	}
 }
@@ -60,7 +60,7 @@ var C = func(i interface{}) Container {
 		panic("could not get the container with C()")
 	}
 
-	c, ok := r.Context().Value(ContainerKey("di")).(Container)
+	c, ok := r.Context().Value(containerKey).(Container)
 	if !ok {
 		panic("could not get the container from the given *http.Request")
 	}
@@ -70,5 +70,18 @@ var C = func(i interface{}) Container {
 
 // Get is a shortcut for C(i).Get(name).
 func Get(i interface{}, name string) interface{} {
+	if ctx, ok := i.(context.Context); ok {
+		return getFromCtx(ctx, name)
+	}
+
 	return C(i).Get(name)
+}
+
+func getFromCtx(ctx context.Context, name string) interface{} {
+	ctn, ok := ctx.Value(containerKey).(Container)
+	if !ok {
+		panic("could not get the container from the given context")
+	}
+
+	return ctn.Get(name)
 }

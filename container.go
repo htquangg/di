@@ -1,5 +1,9 @@
 package di
 
+import "context"
+
+const containerKey ContainerKey = "di"
+
 // container is the implementation of the Container interface.
 type container struct {
 	// containerCore contains the container data.
@@ -68,4 +72,13 @@ func (ctn *container) DeleteWithSubContainers() error {
 
 func (ctn *container) IsClosed() bool {
 	return ctn.containerSlayer.IsClosed(ctn.containerCore)
+}
+
+func (ctn *container) Scoped(ctx context.Context) context.Context {
+	subCtn, err := ctn.SubContainer()
+	if err != nil {
+		panic(err)
+	}
+
+	return context.WithValue(ctx, containerKey, subCtn)
 }
